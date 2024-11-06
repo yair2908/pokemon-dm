@@ -5,9 +5,9 @@ import { LitElement} from 'lit-element';
 export class PokemonDm extends LitElement {
   constructor() {
     super();
-    this.pokemones = [];
-    this.offset = 0;  // Definimos offset por defecto
-    this.limit = 20;  // Definimos limit por defecto
+    this.pokemones = [];  // Inicializar como un array vacío
+    this.offset = 0;      // Asegurar que offset y limit tengan valores por defecto
+    this.limit = 20;
   }
 
   async connectedCallback() {
