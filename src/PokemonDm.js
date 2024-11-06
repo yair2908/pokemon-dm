@@ -3,15 +3,22 @@ import { LitElement} from 'lit-element';
 
 
 export class PokemonDm extends LitElement {
+  constructor() {
+    super();
+    this.pokemones = [];
+    this.offset = 0;  // Definimos offset por defecto
+    this.limit = 20;  // Definimos limit por defecto
+  }
+
   async connectedCallback() {
     super.connectedCallback();
-    await this.fetchPokemones();
+    await this.fetchPokemones();  // Cargamos los Pokémon al conectar
   }
 
   async fetchPokemones() {
     const promesas = [];
     for (let i = this.offset + 1; i <= this.offset + this.limit; i++) {
-      promesas.push(fetch(`https://pokeapi.co/api/v2/pokemon/${i}`).then(res => res.json())); // Corrección de la URL
+      promesas.push(fetch(`https://pokeapi.co/api/v2/pokemon/${i}`).then(res => res.json()));
     }
     const datosPokemones = await Promise.all(promesas);
 
@@ -19,9 +26,15 @@ export class PokemonDm extends LitElement {
       datosPokemones.map(pokemon => this.fetchDatosBasicos(pokemon))
     );
 
-    // Filtra los Pokémon que no tienen evoluciones
     const newPokemones = filteredPokemones.filter(pokemon => !pokemon.hasEvolutions);
     this.pokemones = [...this.pokemones, ...newPokemones]; 
+
+    // Despachamos el evento después de cargar los Pokémon
+    this.dispatchEvent(new CustomEvent('pokemones-cargados', {
+      detail: { pokemones: this.pokemones },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   async fetchDatosBasicos(pokemon) {
